@@ -28,7 +28,7 @@ struct OpticalElementPalette: View {
             Spacer()
         }
         .frame(width: 150)
-        .background(Color(hex: "#ED4EC5").opacity(0.1))
+        .background(Color(hex: "#ED4EC5").opacity(0.15))
     }
 }
 
