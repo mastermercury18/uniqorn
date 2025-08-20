@@ -3,6 +3,8 @@ import SwiftUI
 struct OpticalElementPalette: View {
     let elements = OpticalElementType.allCases
     @Binding var selectedElement: OpticalElementType?
+    @State private var showingDocumentation = false
+    @State private var documentationElement: OpticalElement?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -17,11 +19,19 @@ struct OpticalElementPalette: View {
                         position: CGPoint(x: 0, y: 0),
                         mode: 0
                     ),
-                    isPaletteItem: true
+                    isPaletteItem: true,
+                    onTap: {
+                        selectedElement = element
+                    },
+                    onLongPress: {
+                        documentationElement = OpticalElement(
+                            type: element,
+                            position: CGPoint(x: 0, y: 0),
+                            mode: 0
+                        )
+                        showingDocumentation = true
+                    }
                 )
-                .onTapGesture {
-                    selectedElement = element
-                }
                 .padding(.horizontal)
             }
             
@@ -29,6 +39,13 @@ struct OpticalElementPalette: View {
         }
         .frame(width: 150)
         .background(Color(hex: "#ED4EC5").opacity(0.15))
+        .sheet(isPresented: $showingDocumentation) {
+            if let element = documentationElement {
+                DocumentationPopup(element: element) {
+                    showingDocumentation = false
+                }
+            }
+        }
     }
 }
 
@@ -36,6 +53,10 @@ struct OpticalElementView: View {
     let element: OpticalElement
     var isPaletteItem: Bool = false
     var onRemove: (() -> Void)? = nil
+    var onTap: (() -> Void)? = nil
+    var onLongPress: (() -> Void)? = nil
+    
+    @State private var showingDocumentation = false
     
     var body: some View {
         VStack {
@@ -60,11 +81,33 @@ struct OpticalElementView: View {
                 .stroke(Color(hex: "#F2D3ED"), lineWidth: isPaletteItem ? 2 : 1)
         )
         .padding(4)
+        .onTapGesture {
+            if let onTap = onTap {
+                onTap()
+            } else {
+                showingDocumentation = true
+            }
+        }
+        .onLongPressGesture {
+            if let onLongPress = onLongPress {
+                onLongPress()
+            } else {
+                showingDocumentation = true
+            }
+        }
         .contextMenu {
             if !isPaletteItem && onRemove != nil {
                 Button("Delete", role: .destructive) {
                     onRemove?()
                 }
+            }
+            Button("Documentation") {
+                showingDocumentation = true
+            }
+        }
+        .sheet(isPresented: $showingDocumentation) {
+            DocumentationPopup(element: element) {
+                showingDocumentation = false
             }
         }
     }

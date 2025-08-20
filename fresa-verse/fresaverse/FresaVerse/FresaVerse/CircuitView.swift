@@ -67,7 +67,7 @@ struct CircuitView: View {
                         Text("Run")
                     }
                     .padding(8)
-                    .background(Color(hex: "#FACDF0").opacity(0.2))
+                    .background(Color(hex: "#FACDF0").opacity(0.5))
                     .cornerRadius(8)
                 }
                 .buttonStyle(BorderlessButtonStyle())
@@ -155,12 +155,17 @@ struct CircuitView: View {
                                 .buttonStyle(BorderlessButtonStyle())
                             }
                             
-                            ScrollView {
-                                Text(circuit.results)
-                                    .font(.system(.caption, design: .monospaced))
-                                    .padding()
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .textSelection(.enabled)
+                            HStack {
+                                ScrollView {
+                                    Text(circuit.results)
+                                        .font(.system(.caption, design: .monospaced))
+                                        .padding()
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .textSelection(.enabled)
+                                }
+                                
+                                CopyButton(textToCopy: circuit.results)
+                                    .padding(.trailing, 8)
                             }
                         }
                         .frame(height: 200)
