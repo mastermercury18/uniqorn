@@ -17,7 +17,9 @@ FresaVerse is a macOS application that provides a visual composer for photonic q
 - **Code Generation**: Automatically converts visual circuits to Strawberry Fields Python code
 - **Simulation Ready**: Generated code can be run with Strawberry Fields for quantum optical simulations
 
-<img width="1039" height="677" alt="Screenshot 2025-08-15 at 1 25 13 PM" src="https://github.com/user-attachments/assets/4bcc189b-887c-4001-9c0d-941cb8a0c0aa" />
+<img width="1469" height="915" alt="Screenshot 2025-08-20 at 11 07 07 AM" src="https://github.com/user-attachments/assets/b2f93936-0d11-47b7-b9fd-eeffcd4583e9" />
+<img width="288" height="339" alt="Screenshot 2025-08-20 at 11 10 51 AM" src="https://github.com/user-attachments/assets/52518b29-63b9-41f6-a198-393b1ab1511a" />
+<img width="1264" height="351" alt="Screenshot 2025-08-20 at 11 11 19 AM" src="https://github.com/user-attachments/assets/e639cb38-044e-4268-8c39-008fb91cb16d" />
 
 ## How to Use
 
