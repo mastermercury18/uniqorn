@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CircuitView: View {
     @ObservedObject var circuit: OpticalCircuit
+    @StateObject private var pythonBackend = PythonBackend()
     @State private var selectedElementType: OpticalElementType?
     
     var body: some View {
@@ -39,6 +40,7 @@ struct CircuitView: View {
             }
             .padding(.horizontal)
             
+            // Main content area with circuit as primary focus
             HStack(spacing: 0) {
                 // Palette of elements
                 ScrollView {
@@ -48,7 +50,7 @@ struct CircuitView: View {
                 }
                 .frame(width: 150)
                 
-                // Circuit area
+                // Circuit area - this is now the main focus
                 VStack {
                     // Mode controls
                     HStack {
@@ -77,66 +79,93 @@ struct CircuitView: View {
                     }
                     .padding(.horizontal)
                     
-                    // Mode wires
-                    ScrollView([.horizontal, .vertical]) {
-                        VStack(spacing: 10) {
-                            ForEach(0..<circuit.modes, id: \.self) { mode in
-                                ModeWireView(
-                                    mode: mode, 
-                                    circuit: circuit,
-                                    selectedElementType: $selectedElementType,
-                                    onAddElement: { elementType in
-                                        let element = OpticalElement(
-                                            type: elementType,
-                                            position: CGPoint(x: 0, y: 0),
-                                            mode: mode
-                                        )
-                                        circuit.addElement(element)
-                                    }
-                                )
-                            }
-                        }
-                        .padding()
-                    }
-                    
-                    Spacer()
-                    
-                    // Results area
-                    if !circuit.results.isEmpty {
-                        VStack(alignment: .leading, spacing: 10) {
-                            HStack {
-                                Text("Generated Strawberry Fields Code:")
-                                    .font(.headline)
-                                
-                                Spacer()
-                                
-                                Button(action: {
-                                    circuit.results = ""
-                                }) {
-                                    Image(systemName: "xmark.circle")
-                                        .foregroundColor(.secondary)
+                    // Mode wires - main circuit area (no longer scrolls)
+                    VStack(spacing: 10) {
+                        ForEach(0..<circuit.modes, id: \.self) { mode in
+                            ModeWireView(
+                                mode: mode, 
+                                circuit: circuit,
+                                selectedElementType: $selectedElementType,
+                                onAddElement: { elementType in
+                                    let element = OpticalElement(
+                                        type: elementType,
+                                        position: CGPoint(x: 0, y: 0),
+                                        mode: mode
+                                    )
+                                    circuit.addElement(element)
                                 }
-                                .buttonStyle(BorderlessButtonStyle())
+                            )
+                        }
+                    }
+                    .padding()
+                    
+                    // Results area - now in a scrollable section below the circuit
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 15) {
+                            // Code generation section
+                            if !circuit.results.isEmpty {
+                                VStack(alignment: .leading, spacing: 10) {
+                                    HStack {
+                                        Text("Generated Strawberry Fields Code:")
+                                            .font(.headline)
+                                        
+                                        Spacer()
+                                        
+                                        Button(action: {
+                                            circuit.results = ""
+                                        }) {
+                                            Image(systemName: "xmark.circle")
+                                                .foregroundColor(.secondary)
+                                        }
+                                        .buttonStyle(BorderlessButtonStyle())
+                                    }
+                                    
+                                    HStack {
+                                        ScrollView {
+                                            Text(circuit.results)
+                                                .font(.system(.caption, design: .monospaced))
+                                                .padding()
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                                .textSelection(.enabled)
+                                        }
+                                        
+                                        CopyButton(textToCopy: circuit.results)
+                                            .padding(.trailing, 8)
+                                    }
+                                    .frame(height: 200)
+                                    .padding()
+                                    .background(Color(hex: "#F2D3ED").opacity(0.5))
+                                    .cornerRadius(8)
+                                }
                             }
                             
-                            HStack {
-                                ScrollView {
-                                    Text(circuit.results)
-                                        .font(.system(.caption, design: .monospaced))
-                                        .padding()
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .textSelection(.enabled)
+                            // Python simulation results
+                            if pythonBackend.isRunning {
+                                HStack {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                    Text("Running simulation...")
+                                    Spacer()
                                 }
-                                
-                                CopyButton(textToCopy: circuit.results)
-                                    .padding(.trailing, 8)
+                                .padding()
+                                .background(Color(hex: "#F2D3ED").opacity(0.5))
+                                .cornerRadius(8)
+                            } else if let error = pythonBackend.error {
+                                HStack {
+                                    Image(systemName: "exclamationmark.triangle")
+                                        .foregroundColor(.orange)
+                                    Text("Error: \(error)")
+                                    Spacer()
+                                }
+                                .padding()
+                                .background(Color(hex: "#F2D3ED").opacity(0.5))
+                                .cornerRadius(8)
+                            } else if !pythonBackend.results.isEmpty {
+                                SimulationResultsView(results: pythonBackend.results)
                             }
                         }
-                        .frame(height: 200)
-                        .padding()
-                        .background(Color(hex: "#F2D3ED").opacity(0.5))
-                        .cornerRadius(8)
                         .padding(.horizontal)
+                        .padding(.bottom, 20)  // Add some padding at the bottom
                     }
                 }
             }
@@ -144,8 +173,12 @@ struct CircuitView: View {
     }
     
     func runSimulation() {
+        // Generate the code first
         let code = circuit.generateStrawberryFieldsCode()
         circuit.results = code
+        
+        // Run the simulation using Python backend
+        pythonBackend.runSimulation(circuit: circuit)
     }
 }
 
@@ -168,14 +201,14 @@ struct ModeWireView: View {
                 // Wire line
                 RoundedRectangle(cornerRadius: 2)
                     .stroke(
-                        selectedElementType != nil ? Color(hex: "#ED4EC5") :
-                        (isTargeted ? Color(hex: "#F2D3ED") : Color(hex: "#F2D3ED")),
+                        selectedElementType != nil ? Color(hex: "#fa43e8") :
+                        (isTargeted ? Color.blue : Color.gray),
                         lineWidth: selectedElementType != nil ? 3 : (isTargeted ? 2 : 1)
                     )
                     .frame(height: 60)
                     .background(
-                        selectedElementType != nil ? Color(hex: "#ED4EC5").opacity(0.5) :
-                        (isTargeted ? Color(hex: "#F2D3ED").opacity(0.5) : Color.clear)
+                        selectedElementType != nil ? Color(hex: "#fa43e8").opacity(0.2) :
+                        (isTargeted ? Color.blue.opacity(0.1) : Color.clear)
                     )
                     .onTapGesture {
                         if let elementType = selectedElementType {
