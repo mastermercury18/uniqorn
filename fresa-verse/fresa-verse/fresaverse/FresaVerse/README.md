@@ -1,6 +1,6 @@
-# FresaVerse 🍓🌌
+# FresaVerse
 
-FresaVerse is a macOS application that provides a visual composer for photonic quantum circuits, similar to IBM's Quantum Circuit Composer but using Xanadu's Strawberry Fields framework instead of Qiskit. Users can drag and drop optical elements onto modes (wires) to design photonic quantum circuits, which are then converted into Strawberry Fields code for simulation.
+FresaVerse is an iOS application that provides a visual composer for photonic quantum circuits, similar to IBM's Quantum Circuit Composer but using Xanadu's Strawberry Fields framework instead of Qiskit. Users can drag and drop optical elements onto modes (wires) to design photonic quantum circuits, which are then converted into Strawberry Fields code for simulation.
 
 ## Features
 
@@ -16,10 +16,6 @@ FresaVerse is a macOS application that provides a visual composer for photonic q
 - **Dynamic Modes**: Add or remove optical modes (wires) as needed
 - **Code Generation**: Automatically converts visual circuits to Strawberry Fields Python code
 - **Simulation Ready**: Generated code can be run with Strawberry Fields for quantum optical simulations
-
-<img width="1469" height="915" alt="Screenshot 2025-08-20 at 11 07 07 AM" src="https://github.com/user-attachments/assets/b2f93936-0d11-47b7-b9fd-eeffcd4583e9" />
-<img width="288" height="339" alt="Screenshot 2025-08-20 at 11 10 51 AM" src="https://github.com/user-attachments/assets/52518b29-63b9-41f6-a198-393b1ab1511a" />
-<img width="1264" height="351" alt="Screenshot 2025-08-20 at 11 11 19 AM" src="https://github.com/user-attachments/assets/e639cb38-044e-4268-8c39-008fb91cb16d" />
 
 ## How to Use
 
