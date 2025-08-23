@@ -32,20 +32,6 @@ struct ParameterEditorView: View {
             .background(Color(hex: "#ED4EC5").opacity(0.9))
             .cornerRadius(8)
             
-//            HStack {
-//                Button("Cancel") {
-//                    onCancel()
-//                }
-//                
-//                Spacer()
-//                
-//                Button("Save") {
-//                    onSave()
-//                }
-//                .keyboardShortcut(.defaultAction)
-//            }
-            
-            
             HStack {
                     Button("Cancel") {
                         onCancel()
@@ -83,6 +69,10 @@ struct ParameterEditorView: View {
             return ["kappa"]
         case .beamSplitter:
             return ["theta", "phi"]
+        case .halfWavePlate, .quarterWavePlate:
+            return ["theta"]
+        case .timeDelay:
+            return ["delay"]
         default:
             return []
         }
@@ -98,6 +88,8 @@ struct ParameterEditorView: View {
             return "Angle (θ)"
         case "kappa":
             return "Kerr Parameter (κ)"
+        case "delay":
+            return "Delay"
         default:
             return key
         }
@@ -115,6 +107,10 @@ struct ParameterEditorView: View {
             return key == "kappa" ? 0.1 : 0.0
         case .beamSplitter:
             return key == "theta" ? 0.5 : (key == "phi" ? Double.pi/4 : 0.0)
+        case .halfWavePlate, .quarterWavePlate:
+            return key == "theta" ? 0.0 : 0.0
+        case .timeDelay:
+            return key == "delay" ? 1.0 : 0.0
         default:
             return 0.0
         }
@@ -122,7 +118,7 @@ struct ParameterEditorView: View {
 }
 
 // Custom formatter for floating point numbers
-class FloatingPointFormatter: NumberFormatter {
+class FloatingPointFormatter: NumberFormatter, @unchecked Sendable {
     override init() {
         super.init()
         self.numberStyle = .decimal

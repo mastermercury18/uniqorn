@@ -5,9 +5,9 @@ import json
 import numpy as np
 import os
 
-def execute_strawberry_fields_code(code):
+def execute_perceval_code(code):
     """
-    Execute Strawberry Fields code and return results
+    Execute Perceval code and return results
     """
     try:
         # Create a namespace for execution
@@ -15,14 +15,14 @@ def execute_strawberry_fields_code(code):
             'np': np,
         }
         
-        # Try to import Strawberry Fields
+        # Try to import Perceval
         try:
-            import strawberryfields as sf
-            namespace['sf'] = sf
+            import perceval as pcvl
+            namespace['pcvl'] = pcvl
         except ImportError as e:
             return {
                 'success': False,
-                'error': f'Strawberry Fields not available: {str(e)}'
+                'error': f'Perceval not available: {str(e)}'
             }
         
         # Execute the code
@@ -40,7 +40,7 @@ def execute_strawberry_fields_code(code):
         # If no specific results found, return the whole namespace (excluding built-ins)
         if not results:
             for key, value in namespace.items():
-                if not key.startswith('__') and key not in ['sf', 'np']:
+                if not key.startswith('__') and key not in ['pcvl', 'np']:
                     results[key] = str(value)
         
         return {
@@ -56,7 +56,7 @@ def execute_strawberry_fields_code(code):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print(json.dumps({'success': False, 'error': 'Usage: python3 strawberry_runner.py "<code>" or python3 strawberry_runner.py -f <file>'}))
+        print(json.dumps({'success': False, 'error': 'Usage: python3 perceval_runner.py "<code>" or python3 perceval_runner.py -f <file>'}))
         sys.exit(1)
     
     if sys.argv[1] == '-f' and len(sys.argv) == 3:
@@ -71,5 +71,5 @@ if __name__ == '__main__':
         # Read code from command line argument
         code = sys.argv[1]
     
-    result = execute_strawberry_fields_code(code)
+    result = execute_perceval_code(code)
     print(json.dumps(result))

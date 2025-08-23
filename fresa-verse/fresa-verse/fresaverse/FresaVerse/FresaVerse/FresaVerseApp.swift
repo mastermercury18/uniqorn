@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct MyApp: App {
+struct FresaVerseApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

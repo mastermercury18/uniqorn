@@ -4,6 +4,7 @@ import Foundation
 
 struct CircuitView: View {
     @ObservedObject var circuit: OpticalCircuit
+    @Binding var selectedFramework: QuantumFramework
     @StateObject private var pythonBackend = PythonBackend()
     @State private var selectedElementType: OpticalElementType?
     @State private var showingParameterEditor = false
@@ -16,6 +17,15 @@ struct CircuitView: View {
             VStack(spacing: 10) {
                 // Toolbar
                 HStack {
+                    // Framework selector
+                    Picker("Framework", selection: $selectedFramework) {
+                        ForEach(QuantumFramework.allCases, id: \.self) { framework in
+                            Text(framework.displayName)
+                        }
+                    }
+                    .pickerStyle(MenuPickerStyle())
+                    .frame(width: 200)
+                    
                     Text("FresaVerse: Photonic Quantum Circuit Composer 🍓🌌")
                         .font(.title2)
                         .fontWeight(.bold)
@@ -52,7 +62,8 @@ struct CircuitView: View {
                     // Palette of elements
                     ScrollView {
                         OpticalElementPalette(
-                            selectedElement: $selectedElementType
+                            selectedElement: $selectedElementType,
+                            selectedFramework: $selectedFramework
                         )
                     }
                     .frame(width: 150)
@@ -121,7 +132,7 @@ struct CircuitView: View {
                                 if !circuit.results.isEmpty {
                                     VStack(alignment: .leading, spacing: 10) {
                                         HStack {
-                                            Text("Generated Strawberry Fields Code:")
+                                            Text("Generated \(selectedFramework.rawValue) Code:")
                                                 .font(.headline)
                                             
                                             Spacer()
@@ -227,11 +238,11 @@ struct CircuitView: View {
     
     func runSimulation() {
         // Generate the code first
-        let code = circuit.generateStrawberryFieldsCode()
+        let code = circuit.generateCode(for: selectedFramework)
         circuit.results = code
         
         // Run the simulation using Python backend
-        pythonBackend.runSimulation(circuit: circuit)
+        pythonBackend.runSimulation(circuit: circuit, framework: selectedFramework)
     }
 }
 

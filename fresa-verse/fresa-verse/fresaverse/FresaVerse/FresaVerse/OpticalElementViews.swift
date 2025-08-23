@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct OpticalElementPalette: View {
-    let elements = OpticalElementType.allCases
     @Binding var selectedElement: OpticalElementType?
+    @Binding var selectedFramework: QuantumFramework
     @State private var showingDocumentation = false
     @State private var documentationElement: OpticalElement?
     
@@ -12,7 +12,7 @@ struct OpticalElementPalette: View {
                 .font(.headline)
                 .padding(.horizontal)
             
-            ForEach(elements, id: \.self) { element in
+            ForEach(filteredElements, id: \.self) { element in
                 OpticalElementView(
                     element: OpticalElement(
                         type: element,
@@ -44,6 +44,17 @@ struct OpticalElementPalette: View {
                 DocumentationPopup(element: element) {
                     showingDocumentation = false
                 }
+            }
+        }
+    }
+    
+    private var filteredElements: [OpticalElementType] {
+        return OpticalElementType.allCases.filter { element in
+            switch selectedFramework {
+            case .strawberryFields:
+                return element.supportedInStrawberryFields
+            case .perceval:
+                return element.supportedInPerceval
             }
         }
     }

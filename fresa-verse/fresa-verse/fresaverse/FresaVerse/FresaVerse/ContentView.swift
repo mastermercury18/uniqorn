@@ -9,9 +9,11 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var circuit = OpticalCircuit()
+    @State private var selectedFramework: QuantumFramework = .strawberryFields
     
     var body: some View {
-        CircuitView(circuit: circuit)
+        CircuitView(circuit: circuit, selectedFramework: $selectedFramework)
+            .environmentObject(circuit)
     }
 }
 
