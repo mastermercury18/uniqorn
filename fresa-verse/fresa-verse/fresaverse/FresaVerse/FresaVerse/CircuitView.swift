@@ -25,6 +25,12 @@ struct CircuitView: View {
                     }
                     .pickerStyle(MenuPickerStyle())
                     .frame(width: 200)
+                    .onChange(of: selectedFramework) { newValue in
+                        // Clear circuit, code and results when framework changes
+                        circuit.clearCircuit()
+                        pythonBackend.results = [:]
+                        pythonBackend.error = nil
+                    }
                     
                     Text("FresaVerse: Photonic Quantum Circuit Composer 🍓🌌")
                         .font(.title2)

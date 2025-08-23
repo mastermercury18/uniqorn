@@ -263,8 +263,9 @@ class OpticalCircuit: ObservableObject {
         code += "\n\n# Run simulation"
         code += "\nprocessor.with_input(input_state)"
         code += "\nresult = processor.probs()"
-        code += "\n\n# Display results"
-        code += "\nprint(\"Probabilities:\", result)"
+        code += "\n\n# Extract results for the app"
+        code += "\nprobabilities = str(result)"
+        code += "\nsuccess = True"
         
         return code
     }

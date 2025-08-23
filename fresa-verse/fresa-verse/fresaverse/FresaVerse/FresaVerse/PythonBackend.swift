@@ -18,17 +18,21 @@ class PythonBackend: ObservableObject {
         
         // Generate the code
         let code = circuit.generateCode(for: framework)
+        print("Generated code for \(framework.rawValue):")
+        print(code)
         
         // Run the code in a background thread
         DispatchQueue.global(qos: .userInitiated).async {
             do {
-                let result = try self.executePythonCode(code, framework: framework)
+                let result = try self.executePythonCodeOverHTTP(code, framework: framework)
+                print("Received result: \(result)")
                 
                 DispatchQueue.main.async {
                     self.results = result
                     self.isRunning = false
                 }
             } catch {
+                print("Error executing Python code: \(error)")
                 DispatchQueue.main.async {
                     self.error = error.localizedDescription
                     self.isRunning = false
@@ -37,69 +41,99 @@ class PythonBackend: ObservableObject {
         }
     }
     
-    private func executePythonCode(_ code: String, framework: QuantumFramework) throws -> [String: Any] {
-        // Create a temporary file with the code
-        let tempDir = NSTemporaryDirectory()
-        let codeFile = tempDir.appending("quantum_circuit_\(UUID().uuidString).py")
-        
-        // Write the code to the temporary file
-        try code.write(toFile: codeFile, atomically: true, encoding: .utf8)
-        
-        // Determine which runner script to use
-        let scriptName: String
+    private func executePythonCodeOverHTTP(_ code: String, framework: QuantumFramework) throws -> [String: Any] {
+        // Determine the server URL based on the framework
+        let serverURL: String
         switch framework {
         case .strawberryFields:
-            scriptName = "strawberry_runner.py"
+            serverURL = "http://localhost:8080"
         case .perceval:
-            scriptName = "perceval_runner.py"
+            serverURL = "http://localhost:8081"
         }
         
-        // Get the path to the runner script
-        guard let scriptPath = Bundle.main.path(forResource: scriptName.replacingOccurrences(of: ".py", with: ""), ofType: "py") else {
-            throw NSError(domain: "PythonBackend", code: 1, userInfo: [NSLocalizedDescriptionKey: "Could not find \(scriptName)"])
+        print("Sending request to \(serverURL)")
+        
+        // Create the request
+        guard let url = URL(string: serverURL) else {
+            let error = NSError(domain: "PythonBackend", code: 2, userInfo: [NSLocalizedDescriptionKey: "Invalid server URL: \(serverURL)"])
+            print("URL error: \(error)")
+            throw error
         }
         
-        // Build the command to run the script with the code file as an argument
-        let command = "python3 \"\(scriptPath)\" -f \"\(codeFile)\""
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        // Execute the command
-        let task = Process()
-        let pipe = Pipe()
+        // Create the request body
+        let requestBody = ["code": code]
+        request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
         
-        task.standardOutput = pipe
-        task.standardError = pipe
-        task.arguments = ["-c", command]
-        task.launchPath = "/bin/bash"
+        // Add a timeout
+        request.timeoutInterval = 30.0
         
-        task.launch()
-        task.waitUntilExit()
+        let requestBodyString = String(data: request.httpBody ?? Data(), encoding: .utf8) ?? "nil"
+        print("Request body: \(requestBodyString)")
         
-        // Read the output
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8) ?? ""
+        // Create a semaphore to wait for the response
+        let semaphore = DispatchSemaphore(value: 0)
+        var result: [String: Any] = [:]
+        var requestError: Error?
         
-        // Clean up temporary file
-        try? FileManager.default.removeItem(atPath: codeFile)
-        
-        // Parse the JSON output
-        if let data = output.data(using: .utf8) {
+        // Create the data task
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            defer { semaphore.signal() }
+            
+            if let error = error {
+                print("Request error: \(error)")
+                requestError = error
+                return
+            }
+            
+            // Check the HTTP response
+            if let httpResponse = response as? HTTPURLResponse {
+                print("HTTP status code: \(httpResponse.statusCode)")
+                print("HTTP headers: \(httpResponse.allHeaderFields)")
+            }
+            
+            guard let data = data else {
+                let error = NSError(domain: "PythonBackend", code: 3, userInfo: [NSLocalizedDescriptionKey: "No data received from server"])
+                print("No data error: \(error)")
+                requestError = error
+                return
+            }
+            
+            // Print the raw response data
+            let responseString = String(data: data, encoding: .utf8) ?? "nil"
+            print("Raw response: \(responseString)")
+            
             do {
-                if let result = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                    return result
+                if let jsonResult = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                    print("JSON result: \(jsonResult)")
+                    result = jsonResult
+                } else {
+                    let error = NSError(domain: "PythonBackend", code: 4, userInfo: [NSLocalizedDescriptionKey: "Invalid JSON response from server"])
+                    print("Invalid JSON error: \(error)")
+                    let responseData = String(data: data, encoding: .utf8) ?? "nil"
+                    print("Response data: \(responseData)")
+                    requestError = error
                 }
             } catch {
-                // If JSON parsing fails, return the output as an error
-                return [
-                    "success": false,
-                    "error": "Failed to parse Python output: \(output)"
-                ]
+                print("JSON parsing error: \(error)")
+                let responseData = String(data: data, encoding: .utf8) ?? "nil"
+                print("Response data: \(responseData)")
+                requestError = error
             }
         }
         
-        // If we get here, there was no output or it wasn't valid JSON
-        return [
-            "success": false,
-            "error": "No valid output from Python script: \(output)"
-        ]
+        // Start the task and wait for it to complete
+        task.resume()
+        semaphore.wait()
+        
+        // Check if there was an error during the request
+        if let error = requestError {
+            throw error
+        }
+        
+        return result
     }
 }

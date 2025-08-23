@@ -87,10 +87,9 @@ class StrawberryFieldsHandler(BaseHTTPRequestHandler):
                     if not key.startswith('__') and key not in ['sf', 'np']:
                         results[key] = str(value)
             
-            return {
-                'success': True,
-                'results': results
-            }
+            # Add success flag and return results at top level
+            results['success'] = True
+            return results
             
         except Exception as e:
             return {
