@@ -14,7 +14,7 @@ FresaVerse is a macOS application that provides a visual composer for photonic q
   - Displacement Gates
   - Kerr Gates
   - Polarizing Beam Splitters
-  - Permutations
+  - Waveplates
   - Photonic Measurements
   - And more!
 - **Dynamic Modes**: Add or remove optical modes (wires) as needed
