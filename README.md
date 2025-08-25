@@ -19,9 +19,10 @@ FresaVerse is a macOS application that provides a visual composer for photonic q
 - **Simulation Ready**: Generated code can be run with either framework for quantum optical simulations
 - **Real-time Results**: Visualize simulation results with interactive charts and graphs
 
-<img width="1469" height="915" alt="Screenshot 2025-08-20 at 11 07 07 AM" src="https://github.com/user-attachments/assets/b2f93936-0d11-47b7-b9fd-eeffcd4583e9" />
+<img width="1464" height="819" alt="Screenshot 2025-08-24 at 11 43 36 PM" src="https://github.com/user-attachments/assets/7587e08b-0cb5-4fb1-b6d3-818c23263f2f" />
 <img width="1463" height="823" alt="Screenshot 2025-08-24 at 11 40 06 PM" src="https://github.com/user-attachments/assets/afd16deb-d716-4e90-a6a7-44c237129f9c" />
 <img width="288" height="339" alt="Screenshot 2025-08-20 at 11 10 51 AM" src="https://github.com/user-attachments/assets/52518b29-63b9-41f6-a198-393b1ab1511a" />
+<img width="383" height="186" alt="Screenshot 2025-08-24 at 11 44 52 PM" src="https://github.com/user-attachments/assets/f4fc6b1c-c9e8-4874-a477-b0d78ebe1ceb" />
 
 ## How to Use
 
