@@ -3,9 +3,8 @@
 import sys
 import json
 import numpy as np
+import traceback
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from urllib.parse import urlparse, parse_qs
-import urllib.parse
 
 class StrawberryFieldsHandler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -17,6 +16,10 @@ class StrawberryFieldsHandler(BaseHTTPRequestHandler):
         try:
             data = json.loads(post_data.decode('utf-8'))
             code = data.get('code', '')
+            
+            # Log the received code for debugging
+            print("Received code:")
+            print(code)
             
             # Execute the Strawberry Fields code
             result = self.execute_strawberry_fields_code(code)
@@ -38,7 +41,8 @@ class StrawberryFieldsHandler(BaseHTTPRequestHandler):
             
             error_response = {
                 'success': False,
-                'error': str(e)
+                'error': str(e),
+                'traceback': traceback.format_exc()
             }
             self.wfile.write(json.dumps(error_response).encode('utf-8'))
     
@@ -87,14 +91,22 @@ class StrawberryFieldsHandler(BaseHTTPRequestHandler):
                     if not key.startswith('__') and key not in ['sf', 'np']:
                         results[key] = str(value)
             
-            # Add success flag and return results at top level
-            results['success'] = True
-            return results
+            return {
+                'success': True,
+                'results': results
+            }
             
+        except SyntaxError as e:
+            return {
+                'success': False,
+                'error': f'Syntax error in generated code: {str(e)}',
+                'traceback': traceback.format_exc()
+            }
         except Exception as e:
             return {
                 'success': False,
-                'error': str(e)
+                'error': str(e),
+                'traceback': traceback.format_exc()
             }
 
 if __name__ == '__main__':

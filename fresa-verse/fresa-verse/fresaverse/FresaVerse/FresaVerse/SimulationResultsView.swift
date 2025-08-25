@@ -12,7 +12,7 @@ struct SimulationResultsView: View {
             // Tab view for different result types
             TabView {
                 // Probabilities tab
-                if let probabilities = results["probabilities"] as? [String: Double] {
+                if let probabilities = extractProbabilities() {
                     ProbabilityChartView(probabilities: probabilities)
                         .tabItem {
                             Image(systemName: "chart.bar")
@@ -21,7 +21,7 @@ struct SimulationResultsView: View {
                 }
                 
                 // Counts tab
-                if let counts = results["counts"] as? [String: Int] {
+                if let counts = extractCounts() {
                     CountsChartView(counts: counts)
                         .tabItem {
                             Image(systemName: "number")
@@ -30,7 +30,7 @@ struct SimulationResultsView: View {
                 }
                 
                 // Photon detections tab
-                if let photonDetections = results["photon_detections"] as? [String: Double] {
+                if let photonDetections = extractPhotonDetections() {
                     PhotonDetectionsChartView(detections: photonDetections)
                         .tabItem {
                             Image(systemName: "eye")
@@ -50,6 +50,156 @@ struct SimulationResultsView: View {
         .padding()
         .background(Color(hex: "#F2D3ED").opacity(0.5))
         .cornerRadius(8)
+    }
+    
+    // Helper function to extract probabilities from different data types
+    private func extractProbabilities() -> [String: Double]? {
+        // Try to get probabilities directly from results
+        if let probabilities = results["probabilities"] as? [String: Double] {
+            return probabilities
+        }
+        
+        // Try to get from nested results object
+        if let resultsObj = results["results"] as? [String: Any],
+           let probabilities = resultsObj["probabilities"] as? [String: Double] {
+            return probabilities
+        }
+        
+        // Try to parse string representations
+        if let resultsObj = results["results"] as? [String: Any],
+           let probabilitiesStr = resultsObj["probabilities"] as? String {
+            return parseStringToDictionary(probabilitiesStr)
+        }
+        
+        return nil
+    }
+    
+    // Helper function to extract counts from different data types
+    private func extractCounts() -> [String: Int]? {
+        // Try to get counts directly from results
+        if let counts = results["counts"] as? [String: Int] {
+            return counts
+        }
+        
+        // Try to get from nested results object
+        if let resultsObj = results["results"] as? [String: Any],
+           let counts = resultsObj["counts"] as? [String: Int] {
+            return counts
+        }
+        
+        // Try to parse string representations
+        if let resultsObj = results["results"] as? [String: Any],
+           let countsStr = resultsObj["counts"] as? String {
+            return parseStringToIntDictionary(countsStr)
+        }
+        
+        // Generate counts from probabilities if available
+        if let probabilities = extractProbabilities() {
+            return generateCountsFromProbabilities(probabilities)
+        }
+        
+        return nil
+    }
+    
+    // Helper function to extract photon detections
+    private func extractPhotonDetections() -> [String: Double]? {
+        // Try to get photon detections directly from results
+        if let photonDetections = results["photon_detections"] as? [String: Double] {
+            return photonDetections
+        }
+        
+        // Try to get from nested results object
+        if let resultsObj = results["results"] as? [String: Any],
+           let photonDetections = resultsObj["photon_detections"] as? [String: Double] {
+            return photonDetections
+        }
+        
+        // Try to parse string representations
+        if let resultsObj = results["results"] as? [String: Any],
+           let detectionsStr = resultsObj["photon_detections"] as? String {
+            return parseStringToDictionary(detectionsStr)
+        }
+        
+        return nil
+    }
+    
+    // Generate counts from probabilities
+    private func generateCountsFromProbabilities(_ probabilities: [String: Double]) -> [String: Int] {
+        var counts: [String: Int] = [:]
+        let totalSamples = 1000
+        
+        for (state, probability) in probabilities {
+            let count = Int(probability * Double(totalSamples))
+            if count > 0 {
+                counts[state] = count
+            }
+        }
+        
+        return counts
+    }
+    
+    // Parse string representation of dictionary to [String: Double]
+    private func parseStringToDictionary(_ str: String) -> [String: Double]? {
+        // Handle Python dict format: {'00': 0.25, '01': 0.25}
+        let cleanStr = str.replacingOccurrences(of: "'", with: "\"")
+            .replacingOccurrences(of: "OrderedDict", with: "")
+            .replacingOccurrences(of: "dict", with: "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // Try to parse as JSON
+        if let data = cleanStr.data(using: .utf8) {
+            do {
+                if let dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                    var result: [String: Double] = [:]
+                    for (key, value) in dict {
+                        if let doubleValue = value as? Double {
+                            result[key] = doubleValue
+                        } else if let intValue = value as? Int {
+                            result[key] = Double(intValue)
+                        } else if let stringValue = value as? String, let doubleValue = Double(stringValue) {
+                            result[key] = doubleValue
+                        }
+                    }
+                    return result
+                }
+            } catch {
+                print("Error parsing dictionary string: \(error)")
+            }
+        }
+        
+        return nil
+    }
+    
+    // Parse string representation of dictionary to [String: Int]
+    private func parseStringToIntDictionary(_ str: String) -> [String: Int]? {
+        // Handle Python dict format: {'00': 250, '01': 250}
+        let cleanStr = str.replacingOccurrences(of: "'", with: "\"")
+            .replacingOccurrences(of: "OrderedDict", with: "")
+            .replacingOccurrences(of: "dict", with: "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // Try to parse as JSON
+        if let data = cleanStr.data(using: .utf8) {
+            do {
+                if let dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                    var result: [String: Int] = [:]
+                    for (key, value) in dict {
+                        if let intValue = value as? Int {
+                            result[key] = intValue
+                        } else if let doubleValue = value as? Double {
+                            result[key] = Int(doubleValue)
+                        } else if let stringValue = value as? String, let intValue = Int(stringValue) {
+                            result[key] = intValue
+                        }
+                    }
+                    return result
+                }
+            } catch {
+                print("Error parsing integer dictionary string: \(error)")
+            }
+        }
+        
+        return nil
     }
 }
 
@@ -76,7 +226,7 @@ struct ProbabilityChartView: View {
                     AxisTick()
                 }
             }
-            .frame(minWidth: CGFloat(probabilities.count) * 50)
+            .frame(minWidth: max(CGFloat(probabilities.count) * 50, 300))
         }
     }
 }
@@ -104,7 +254,7 @@ struct CountsChartView: View {
                     AxisTick()
                 }
             }
-            .frame(minWidth: CGFloat(counts.count) * 50)
+            .frame(minWidth: max(CGFloat(counts.count) * 50, 300))
         }
     }
 }
@@ -132,7 +282,7 @@ struct PhotonDetectionsChartView: View {
                     AxisTick()
                 }
             }
-            .frame(minWidth: CGFloat(detections.count) * 50)
+            .frame(minWidth: max(CGFloat(detections.count) * 50, 300))
         }
     }
 }
@@ -151,19 +301,21 @@ struct SimulationInfoView: View {
                 }
             }
             
-            if let simTime = results["simulation_time"] as? String {
-                HStack {
-                    Text("Simulation Time:")
-                        .fontWeight(.bold)
-                    Text(simTime)
+            if let resultsObj = results["results"] as? [String: Any] {
+                if let simTime = resultsObj["simulation_time"] as? String {
+                    HStack {
+                        Text("Simulation Time:")
+                            .fontWeight(.bold)
+                        Text(simTime)
+                    }
                 }
-            }
-            
-            if let probabilities = results["probabilities"] as? [String: Double] {
-                HStack {
-                    Text("Number of States:")
-                        .fontWeight(.bold)
-                    Text("\(probabilities.count)")
+                
+                if let probabilities = resultsObj["probabilities"] as? [String: Double] {
+                    HStack {
+                        Text("Number of States:")
+                            .fontWeight(.bold)
+                        Text("\(probabilities.count)")
+                    }
                 }
             }
             

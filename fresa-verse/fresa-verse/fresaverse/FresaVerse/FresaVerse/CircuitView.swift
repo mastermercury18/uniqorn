@@ -183,11 +183,26 @@ struct CircuitView: View {
                                     .background(Color(hex: "#F2D3ED").opacity(0.5))
                                     .cornerRadius(8)
                                 } else if let error = pythonBackend.error {
-                                    HStack {
-                                        Image(systemName: "exclamationmark.triangle")
-                                            .foregroundColor(.orange)
-                                        Text("Error: \(error)")
-                                        Spacer()
+                                    VStack(alignment: .leading, spacing: 10) {
+                                        HStack {
+                                            Image(systemName: "exclamationmark.triangle")
+                                                .foregroundColor(.orange)
+                                            Text("Simulation Error")
+                                                .fontWeight(.bold)
+                                            Spacer()
+                                        }
+                                        
+                                        Text(error)
+                                            .font(.caption)
+                                            .foregroundColor(.red)
+                                            .textSelection(.enabled)
+                                        
+                                        Button("Dismiss") {
+                                            pythonBackend.error = nil
+                                        }
+                                        .padding(8)
+                                        .background(Color.red.opacity(0.2))
+                                        .cornerRadius(8)
                                     }
                                     .padding()
                                     .background(Color(hex: "#F2D3ED").opacity(0.5))

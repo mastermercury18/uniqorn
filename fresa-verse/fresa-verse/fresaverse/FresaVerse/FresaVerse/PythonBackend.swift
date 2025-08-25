@@ -18,8 +18,15 @@ class PythonBackend: ObservableObject {
         
         // Generate the code
         let code = circuit.generateCode(for: framework)
+        print("=== DEBUG INFO ===")
         print("Generated code for \(framework.rawValue):")
         print(code)
+        print("=== Code with line numbers ===")
+        let lines = code.components(separatedBy: .newlines)
+        for (index, line) in lines.enumerated() {
+            print("\(index + 1): \(line)")
+        }
+        print("=== END DEBUG INFO ===")
         
         // Run the code in a background thread
         DispatchQueue.global(qos: .userInitiated).async {
@@ -33,8 +40,9 @@ class PythonBackend: ObservableObject {
                 }
             } catch {
                 print("Error executing Python code: \(error)")
+                let detailedError = "Simulation failed: \(error.localizedDescription)"
                 DispatchQueue.main.async {
-                    self.error = error.localizedDescription
+                    self.error = detailedError
                     self.isRunning = false
                 }
             }
@@ -92,7 +100,6 @@ class PythonBackend: ObservableObject {
             // Check the HTTP response
             if let httpResponse = response as? HTTPURLResponse {
                 print("HTTP status code: \(httpResponse.statusCode)")
-                print("HTTP headers: \(httpResponse.allHeaderFields)")
             }
             
             guard let data = data else {
@@ -110,17 +117,26 @@ class PythonBackend: ObservableObject {
                 if let jsonResult = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                     print("JSON result: \(jsonResult)")
                     result = jsonResult
+                    
+                    // Check if the result indicates success or failure
+                    if let success = jsonResult["success"] as? Bool {
+                        if !success {
+                            print("Server reported simulation failure")
+                            // Create a more descriptive error message
+                            let errorMessage = jsonResult["error"] as? String ?? "Unknown server error"
+                            let error = NSError(domain: "PythonBackend", code: 5, userInfo: [NSLocalizedDescriptionKey: "Simulation failed: \(errorMessage)"])
+                            requestError = error
+                        }
+                    } else {
+                        print("Server response missing success field")
+                    }
                 } else {
                     let error = NSError(domain: "PythonBackend", code: 4, userInfo: [NSLocalizedDescriptionKey: "Invalid JSON response from server"])
                     print("Invalid JSON error: \(error)")
-                    let responseData = String(data: data, encoding: .utf8) ?? "nil"
-                    print("Response data: \(responseData)")
                     requestError = error
                 }
             } catch {
                 print("JSON parsing error: \(error)")
-                let responseData = String(data: data, encoding: .utf8) ?? "nil"
-                print("Response data: \(responseData)")
                 requestError = error
             }
         }

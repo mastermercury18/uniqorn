@@ -1,0 +1,12 @@
+# Required packages for FresaVerse quantum simulation
+# Note: Strawberry Fields requires a patch for newer SciPy versions
+# Patch: In strawberryfields/backends/states.py, change:
+#   from scipy.integrate import simps
+# to:
+#   from scipy.integrate import simpson as simps
+
+strawberryfields==0.23.0
+perceval-quandelibc==0.2.0
+numpy>=1.21.0
+scipy>=1.10.0
+requests>=2.25.0

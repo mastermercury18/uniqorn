@@ -3,7 +3,6 @@
 import sys
 import json
 import numpy as np
-import os
 
 def execute_perceval_code(code):
     """
@@ -55,21 +54,10 @@ def execute_perceval_code(code):
         }
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print(json.dumps({'success': False, 'error': 'Usage: python3 perceval_runner.py "<code>" or python3 perceval_runner.py -f <file>'}))
+    if len(sys.argv) != 2:
+        print(json.dumps({'success': False, 'error': 'Usage: python3 perceval_runner.py "<code>"'}))
         sys.exit(1)
     
-    if sys.argv[1] == '-f' and len(sys.argv) == 3:
-        # Read code from file
-        try:
-            with open(sys.argv[2], 'r') as f:
-                code = f.read()
-        except Exception as e:
-            print(json.dumps({'success': False, 'error': f'Failed to read file: {str(e)}'}))
-            sys.exit(1)
-    else:
-        # Read code from command line argument
-        code = sys.argv[1]
-    
+    code = sys.argv[1]
     result = execute_perceval_code(code)
     print(json.dumps(result))

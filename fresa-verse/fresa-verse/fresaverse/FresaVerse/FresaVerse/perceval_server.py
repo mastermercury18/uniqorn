@@ -4,8 +4,6 @@ import sys
 import json
 import numpy as np
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from urllib.parse import urlparse, parse_qs
-import urllib.parse
 
 class PercevalHandler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -87,9 +85,10 @@ class PercevalHandler(BaseHTTPRequestHandler):
                     if not key.startswith('__') and key not in ['pcvl', 'np']:
                         results[key] = str(value)
             
-            # Add success flag and return results at top level
-            results['success'] = True
-            return results
+            return {
+                'success': True,
+                'results': results
+            }
             
         except Exception as e:
             return {
