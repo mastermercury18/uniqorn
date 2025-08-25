@@ -81,15 +81,36 @@ FresaVerse/
 
 ## Supported Optical Elements
 
-| Element | Symbol | Description | Strawberry Fields | Perceval |
-|---------|--------|-------------|-------------------|----------|
-| Laser | 💡 | Creates a coherent state (laser input) | ✅ | Partial (uses single photon source) |
-| Beam Splitter | 🔀 | Splits or combines optical paths | ✅ | ✅ |
-| Phase Shifter | 𝜙 | Applies a phase shift to a mode | ✅ | ✅ |
-| Squeezing Gate | ⇉ | Applies squeezing operation | ✅ | ❌ |
-| Displacement Gate | ↗️ | Displaces a state in phase space | ✅ | ❌ |
-| Kerr Gate | 🌀 | Applies Kerr nonlinearity | ✅ | ❌ |
-| Photonic Measurement | 🔍 | Measures photonic states | ✅ | Partial (implicit in Perceval) |
+FresaVerse supports a wide range of optical elements for quantum photonic circuit design. These elements are categorized based on which frameworks support them.
+
+### Elements Supported by Both Frameworks
+
+| Element | Symbol | Description |
+|---------|--------|-------------|
+| Laser | 💡 | Creates a coherent state (laser input) |
+| Beam Splitter | 🔀 | Splits or combines optical paths |
+| Phase Shifter | 𝜙 | Applies a phase shift to a mode |
+| Photonic Measurement | 🔍 | Measures photonic states |
+
+### Elements Supported by Strawberry Fields Only
+
+| Element | Symbol | Description |
+|---------|--------|-------------|
+| Squeezing Gate | ⇉ | Applies squeezing operation |
+| Displacement Gate | ↗️ | Displaces a state in phase space |
+| Kerr Gate | 🌀 | Applies Kerr nonlinearity |
+
+### Elements Supported by Perceval Only
+
+| Element | Symbol | Description |
+|---------|--------|-------------|
+| Half Wave Plate | ½λ | Half-wave plate for polarization manipulation |
+| Quarter Wave Plate | ¼λ | Quarter-wave plate for polarization manipulation |
+| Permutation | 🔄 | Permutes modes in the circuit |
+| Polarizing Beam Splitter | ✨ | Beam splitter that acts on polarization |
+| Time Delay | 🕙 | Applies a time delay to a mode |
+| Unitary | 🅤 | Arbitrary unitary transformation |
+
 
 ## Setting Up Backend Servers
 
