@@ -23,7 +23,7 @@ uniqorn is a macOS application that provides a visual composer for photonic quan
 - **Real-time Results**: Visualize simulation results with interactive charts and graphs
 
 <img width="1467" height="820" alt="Screenshot 2025-08-27 at 12 04 42 AM" src="https://github.com/user-attachments/assets/462533bc-99e7-4f44-90be-49e26beaa716" />
-<img width="1467" height="821" alt="Screenshot 2025-08-27 at 12 04 12 AM" src="https://github.com/user-attachments/assets/57b55d90-3dfe-4547-8a6e-ae7037479528" />
+<img width="1466" height="822" alt="Screenshot 2025-08-27 at 12 09 01 AM" src="https://github.com/user-attachments/assets/49b14261-789e-45ad-bb48-c5d98ff7b9e6" />
 <img width="288" height="339" alt="Screenshot 2025-08-20 at 11 10 51 AM" src="https://github.com/user-attachments/assets/52518b29-63b9-41f6-a198-393b1ab1511a" />
 <img width="383" height="186" alt="Screenshot 2025-08-24 at 11 44 52 PM" src="https://github.com/user-attachments/assets/f4fc6b1c-c9e8-4874-a477-b0d78ebe1ceb" />
 
