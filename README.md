@@ -1,6 +1,6 @@
-# FresaVerse 🍓🌌
+# uniqorn 🦄
 
-FresaVerse is a macOS application that provides a visual composer for photonic quantum circuits. Users can drag and drop optical elements onto modes (wires) to design photonic quantum circuits, which are then converted into code for simulation with either Xanadu's Strawberry Fields or Quandela's Perceval frameworks.
+uniqorn is a macOS application that provides a visual composer for photonic quantum circuits. Users can drag and drop optical elements onto modes (wires) to design photonic quantum circuits, which are then converted into code for simulation with either Xanadu's Strawberry Fields or Quandela's Perceval frameworks.
 
 ## Features
 
@@ -30,7 +30,7 @@ FresaVerse is a macOS application that provides a visual composer for photonic q
 ## How to Use
 
 1. **Start Backend Servers**: 
-   - Navigate to the FresaVerse/FresaVerse directory
+   - Navigate to the uniqorn/uniqorn directory
    - Run `./start_servers.sh` to start both Strawberry Fields and Perceval servers
    - Alternatively, start them individually:
      - Strawberry Fields: `python3 strawberry_server.py 8080`
@@ -58,10 +58,10 @@ FresaVerse is a macOS application that provides a visual composer for photonic q
 ## Project Structure
 
 ```
-FresaVerse/
-├── FresaVerse/
+uniqorn/
+├── uniqorn/
 │   ├── ContentView.swift          # Main view
-│   ├── FresaVerseApp.swift        # App entry point
+│   ├── uniqornApp.swift        # App entry point
 │   ├── OpticalElement.swift       # Optical element models
 │   ├── OpticalCircuit.swift       # Circuit logic and code generation
 │   ├── OpticalElementViews.swift  # UI components for elements
@@ -70,7 +70,7 @@ FresaVerse/
 │   ├── QuantumFramework.swift     # Framework definitions
 │   ├── SimulationResultsView.swift # Results visualization
 │   └── Assets.xcassets/           # App assets
-├── FresaVerse.xcodeproj/          # Xcode project files
+├── uniqorn.xcodeproj/          # Xcode project files
 ├── strawberry_server.py           # Strawberry Fields HTTP server
 ├── perceval_server.py              # Perceval HTTP server
 ├── start_servers.sh               # Script to start both servers
@@ -81,7 +81,7 @@ FresaVerse/
 
 ## Supported Optical Elements
 
-FresaVerse supports a wide range of optical elements for quantum photonic circuit design. These elements are categorized based on which frameworks support them.
+uniqorn supports a wide range of optical elements for quantum photonic circuit design. These elements are categorized based on which frameworks support them.
 
 ### Elements Supported by Both Frameworks
 
@@ -114,7 +114,7 @@ FresaVerse supports a wide range of optical elements for quantum photonic circui
 
 ## Setting Up Backend Servers
 
-FresaVerse requires Python backend servers to run simulations. Follow these steps to set up:
+uniqorn requires Python backend servers to run simulations. Follow these steps to set up:
 
 ### Prerequisites
 - Python 3.8 or later
@@ -128,18 +128,18 @@ FresaVerse requires Python backend servers to run simulations. Follow these step
 
 1. **Automatic Method** (recommended):
    ```bash
-   cd FresaVerse/FresaVerse
+   cd uniqorn/uniqorn
    ./start_servers.sh
    ```
 
 2. **Manual Method**:
    ```bash
    # Terminal 1: Start Strawberry Fields server
-   cd FresaVerse/FresaVerse
+   cd uniqorn/uniqorn
    python3 strawberry_server.py 8080
    
    # Terminal 2: Start Perceval server
-   cd FresaVerse/FresaVerse
+   cd uniqorn/uniqorn
    python3 perceval_server.py 8081
    ```
 
@@ -158,7 +158,7 @@ FresaVerse requires Python backend servers to run simulations. Follow these step
 
 ## Code Generation
 
-When you click "Run Simulation", FresaVerse generates equivalent Python code for the selected framework and sends it to the appropriate backend server.
+When you click "Run Simulation", uniqorn generates equivalent Python code for the selected framework and sends it to the appropriate backend server.
 
 ### For Strawberry Fields:
 ```python
