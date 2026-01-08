@@ -1,4 +1,4 @@
-# uniqorn 🦄
+# [uniqorn]([url](https://github.com/mastermercury18/uniqorn)) 🦄
 
 uniqorn is a macOS application that provides a visual composer for photonic quantum circuits. Users can drag and drop optical elements onto modes (wires) to design photonic quantum circuits, which are then converted into code for simulation with either Xanadu's Strawberry Fields or Quandela's Perceval frameworks.
 
