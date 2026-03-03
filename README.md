@@ -24,8 +24,6 @@ uniqorn is a macOS application that provides a visual composer for photonic quan
 
 ![Strawberry Fields](uniqorn-1.png)
 ![Perceval](uniqorn-2.png)
-![Component Editor](uniqorn-3.png)
-![Sim](uniqorn-4.png)
 
 ## How to Use
 
