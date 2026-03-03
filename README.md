@@ -16,7 +16,6 @@ uniqorn is a macOS application that provides a visual composer for photonic quan
   - Polarizing Beam Splitters
   - Waveplates
   - Photonic Measurements
-  - And more!
 - **Dynamic Modes**: Add or remove optical modes (wires) as needed
 - **Code Generation**: Automatically converts visual circuits to Python code for either Strawberry Fields or Perceval
 - **Simulation Ready**: Generated code can be run with either framework for quantum optical simulations
@@ -24,27 +23,6 @@ uniqorn is a macOS application that provides a visual composer for photonic quan
 
 ![Strawberry Fields](uniqorn-1.png)
 ![Perceval](uniqorn-2.png)
-
-## How to Use
-
-1. **Start Backend Servers**: 
-   - Navigate to the uniqorn/uniqorn directory
-   - Run `./start_servers.sh` to start both Strawberry Fields and Perceval servers
-   - Alternatively, start them individually:
-     - Strawberry Fields: `python3 strawberry_server.py 8080`
-     - Perceval: `python3 perceval_server.py 8081`
-
-2. **Select Framework**: Use the dropdown in the top-left to switch between Strawberry Fields and Perceval
-3. **Select Elements**: Choose an optical element from the left palette
-4. **Place Elements**: Tap on any mode (wire) to place the selected element
-5. **Manage Circuit**: 
-   - Use the "+" and "-" buttons to add or remove modes
-   - Right-click (or long press) on elements to delete them
-6. **Run Simulation**: 
-   - Click "Run Simulation" to generate the Python code for the selected framework
-   - The generated code will be sent to the appropriate backend server for simulation
-   - Results will appear in the visualization panel at the bottom with interactive charts
-7. **Clear**: Use the "Clear" button to reset the entire circuit
 
 ## Technology Stack
 
