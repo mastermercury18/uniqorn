@@ -154,57 +154,6 @@ uniqorn requires Python backend servers to run simulations. Follow these steps t
   pkill -f "perceval_server.py"
   ```
 
-## Code Generation
-
-When you click "Run Simulation", uniqorn generates equivalent Python code for the selected framework and sends it to the appropriate backend server.
-
-### For Strawberry Fields:
-```python
-import strawberryfields as sf
-from strawberryfields.ops import *
-import numpy as np
-
-# Initialize program with 2 modes
-prog = sf.Program(2)
-
-# Create engine
-eng = sf.Engine("gaussian")
-
-# Circuit definition
-with prog.context as q:
-    Coherent(1.0) | q[0]
-    BSgate(0.5, 0.0) | (q[0], q[1])
-
-# Run the simulation
-result = eng.run(prog)
-
-# Extract probabilities and counts for display
-state = result.state
-probabilities = state.all_fock_probs(cutoff=3)
-```
-
-### For Perceval:
-```python
-import perceval as pcvl
-import numpy as np
-
-# Initialize circuit with 2 modes
-circuit = pcvl.Circuit(2)
-
-# Beam splitter between mode 0 and 1
-circuit.add((0, 1), pcvl.BS())
-
-# Add input state (single photon in mode 0, vacuum in others)
-input_state = pcvl.BasicState([1, 0])
-
-# Create processor and simulator
-processor = pcvl.Processor("SLOS", circuit)
-processor.with_input(input_state)
-
-# Run simulation using sampler
-sampler = pcvl.algorithm.Sampler(processor)
-sample_result = sampler.samples(1000)
-```
 
 ## Requirements
 
@@ -212,38 +161,6 @@ sample_result = sampler.samples(1000)
 - macOS 14.0 or later for development
 - Python 3.8 or later with dependencies listed in `requirements.txt`
 
-## Troubleshooting
-
-### Common Issues
-
-1. **Connection Refused Errors**: 
-   - Ensure both backend servers are running
-   - Check that ports 8080 and 8081 are not blocked by firewall
-   - Use `lsof -i :8080` and `lsof -i :8081` to verify servers are listening
-
-2. **Python Package Issues**:
-   - Install dependencies: `pip install -r requirements.txt`
-   - For Strawberry Fields compatibility: May require specific SciPy version
-
-3. **Server Startup Failures**:
-   - Kill existing processes: `./kill_ports.sh`
-   - Restart servers: `./start_servers.sh`
-
-### Server Management Scripts
-
-- `start_servers.sh`: Starts both servers in the background
-- `kill_ports.sh`: Kills processes using ports 8080 and 8081
-- `strawberry_server.py`: Runs Strawberry Fields server on port 8080
-- `perceval_server.py`: Runs Perceval server on port 8081
-
-## Future Enhancements
-
-- Integration with additional quantum photonic frameworks
-- More sophisticated circuit validation
-- Export/import functionality for circuits
-- Advanced parameter editing for optical elements
-- Visualization of quantum states
-- Tutorial and documentation
 
 ## License
 
