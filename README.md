@@ -132,18 +132,6 @@ uniqorn requires Python backend servers to run simulations. Follow these steps t
   pkill -f "perceval_server.py"
   ```
 
-
-## Requirements
-
-- Xcode 16.4 or later
-- macOS 14.0 or later for development
-- Python 3.8 or later with dependencies listed in `requirements.txt`
-
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## Acknowledgments
 
 - Xanadu for the Strawberry Fields framework
